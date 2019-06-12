@@ -2,6 +2,7 @@
 import argparse
 import os
 import subprocess
+import sys
 
 __library_path__ = "@LIBFREERDP_LIBDIR@"
 
@@ -19,8 +20,14 @@ def main(input, output):
 
 
 if __name__ == "__main__":
-    if __library_path__ not in os.environs:
-        pass
+    if "LD_LIBRARY_PATH" not in os.environ:
+        my_env = os.environ.copy()
+        my_env["LD_LIBRARY_PATH"] = __library_path__
+        try:
+            subprocess.check_call(sys.argv, env=my_env)
+            exit(0)
+        except subprocess.CalledProcessError as e:
+            exit(e.returncode)
 
     parser = argparse.ArgumentParser(description="""
     Extract information from Cacdec recorder present in mstscax.dll (used by mstsc.exe). 

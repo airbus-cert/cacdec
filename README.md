@@ -21,7 +21,7 @@ This channel is activate when both client and server can use RemoteFX, and the r
 cacdec use a wrapper around [FreeRDP](!https://github.com/FreeRDP/FreeRDP) to use the calista decoder. This imply to install freerdp from main repository before use __cacdec__
 
 ```
-sudo apt install libfreerdp2-2
+sudo apt install cmake zlib1g-dev libglib2.0-dev libssl-dev
 ```
 
 And then you can install cacdec :
