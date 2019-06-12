@@ -4,3 +4,4 @@ build/
 *.so
 __pycache__/
 dist/
+bin/cacdec

@@ -1,12 +1,16 @@
 # -*- coding: utf-8 -*-
 
 """
+Define all Packet structure type reverse directly from mstsc
 """
 from struct import pack
 
-from construct import Struct, Const, Bytes, Int8ul, Int32ul, GreedyRange, Select, If, Int64ul, RepeatUntil
+from construct import Struct, Const, Bytes, Int8ul, Int32ul, Select, If, Int64ul, RepeatUntil
 from cacdec.progressive import progressive_context_new, progressive_decompress, progressive_create_surface_context
 
+"""
+This is the fist packet which inform us about screen and encoded format
+"""
 RdpBitmapinfo = Struct(
     "unk_1" / Int32ul,
     "width" / Int32ul,
@@ -36,6 +40,9 @@ RectResult = Struct(
     "status" / Int32ul
 )
 
+"""
+This struct encompass all calista stream
+"""
 Bitmap = Struct(
     "type" / Const(4, Int8ul),
     "index" / Int32ul,
@@ -62,7 +69,27 @@ CacdecDump = Struct(
 )
 
 
+def write_bmp(file_path, width, height, data):
+    """
+    Write a BMP file a output
+    :param file_path: path of file
+    :param width: with of image
+    :param height: height of image
+    :param data: raw image data
+    """
+    with open(file_path, "wb") as f:
+        f.write(
+            b"BM" + pack("<L", len(data) + 0x36) + b"\x00\x00\x00\x00\x32\x00\x00\x00\x28\x00\x00\x00" + pack(
+                "<L", width) + pack("<L", height) + b"\x01\x00\x20\x00\x00\x00\x00\x00" + pack("<L", len(
+                data)) + b"\x00" * 12 + data)
+
+
 def build_from_stream(stream, output_folder):
+    """
+    Create a bitmap for each frame of calista stream
+    :param stream: the input file stream
+    :param output_folder: folder where all frame will be written
+    """
     cacdec_stream = CacdecDump.parse(stream)
     # first object must be a context
     if cacdec_stream.objects[0].type != 0:

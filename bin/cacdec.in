@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 import argparse
+import os
+import subprocess
 
-from cacdec.cacdec import build_from_stream
+__library_path__ = "@LIBFREERDP_LIBDIR@"
 
 
 def main(input, output):
@@ -11,11 +13,15 @@ def main(input, output):
     :param output: output folder
     :return:
     """
+    from cacdec.cacdec import build_from_stream
     with open(input, "rb") as input_file:
         build_from_stream(input_file.read(), output)
 
 
 if __name__ == "__main__":
+    if __library_path__ not in os.environs:
+        pass
+
     parser = argparse.ArgumentParser(description="""
     Extract information from Cacdec recorder present in mstscax.dll (used by mstsc.exe). 
     This is made with love by Airbus CERT Team.
