@@ -97,14 +97,17 @@ def build_from_stream(stream, output_folder):
     width = cacdec_stream.objects[0].info.width
     height = cacdec_stream.objects[0].info.height
     codec = progressive_context_new(False)
-    progressive_create_surface_context(codec, 0, 640, 480)
+    progressive_create_surface_context(codec, 0, width, height)
 
     screen = bytes(width*height*4)
     index = 0
     for i in cacdec_stream.objects:
         if i.type == 4:
-            progressive_decompress(codec, i.info.width, i.info.height, i.info.dst_step, i.data, screen)
-            file_path = "%s/windows.%s.data"%(output_folder, index)
+            res = progressive_decompress(codec, i.info.width, i.info.height, i.info.dst_step, i.data, screen)
+            if res != 1:
+                print("[!] Error during progressive decompression")
+                continue
+            file_path = "%s/windows.%s.bmp"%(output_folder, index)
             print("[+] writing frame of size %s %s into raw file data %s" % (width, height, file_path))
 
             screen_output = b''
@@ -114,8 +117,6 @@ def build_from_stream(stream, output_folder):
                 for j in range(0, width):
                     line += curent_line[j*4:(j+1)*4][::-1]
                 screen_output += line
-
-            with open(file_path, "wb") as f:
-                f.write(b"BM"+pack("<L", len(screen_output)+0x36)+b"\x00\x00\x00\x00\x32\x00\x00\x00\x28\x00\x00\x00"+pack("<L", width)+pack("<L", height)+b"\x01\x00\x20\x00\x00\x00\x00\x00"+pack("<L", len(screen_output))+b"\x00"*12+screen_output)
+            write_bmp(file_path, width, height, screen_output)
             index += 1
 

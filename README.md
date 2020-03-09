@@ -34,8 +34,8 @@ python setup.py install
 ## Activate recorder on client machine
 
 To activate recorder set this two registry keys on client
-* HKLM\SOFTWARE\Microsoft\Terminal Server Client\EnableRecording set to one
-* HKLM\SOFTWARE\Microsoft\Terminal Server Client\RecordingPath set to output filename
+* HKLM\SOFTWARE\Microsoft\Terminal Server Client\EnableRecording DWORD set to one
+* HKLM\SOFTWARE\Microsoft\Terminal Server Client\RecordingPath STRING set to output filename
 
 ## Parse cacdec stream
 
